@@ -25,9 +25,10 @@ void SetConsoleTextColor(int color) {
 void PrintProcessList(HANDLE snapshot, ProcessFilter filter) {
     PROCESSENTRY32W processEntry = { sizeof(PROCESSENTRY32W) };
     if (Process32FirstW(snapshot, &processEntry)) {
+        SetConsoleTitle(L"PID Finder/Process Finder");
         SetConsoleTextColor(COLOR_GREEN);
-        std::wcout << "PID\t\tProcess Name\t\tCPU Usage\t\tMemory Usage" << std::endl;
-        std::wcout << "------------------------------------------------------------" << std::endl;
+        std::wcout << "PID\t\tProcess Name\t\tCPU Usage\tMemory Usage" << std::endl;
+        std::wcout << "---------------------------------------------------------------------" << std::endl;
 
         do {
             bool isApplication = (processEntry.szExeFile[0] != L'\0');
@@ -101,6 +102,7 @@ void PrintProcessList(HANDLE snapshot, ProcessFilter filter) {
 }
 
 std::string GetSystemInformation() {
+    SetConsoleTitle(L"System Information");
     SYSTEM_INFO systemInfo;
     GetSystemInfo(&systemInfo);
 
@@ -142,6 +144,8 @@ std::string GetSystemInformation() {
 }
 
 int main() {
+    SetConsoleTitle(L"Multitool");
+
     HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
     if (snapshot == INVALID_HANDLE_VALUE) {
         std::cerr << "Failed to retrieve process snapshot." << std::endl;
@@ -178,12 +182,14 @@ int main() {
         }
         else {
             if (filter == AllProcesses) {
+                SetConsoleTitle(L"Multitool");
                 SetConsoleTextColor(COLOR_YELLOW);
                 std::cout << ">> Displaying All Processes" << std::endl;
                 SetConsoleTextColor(COLOR_GREEN);
                 std::cout << "   Display System Information" << std::endl;
             }
             else {
+                SetConsoleTitle(L"Multitool");
                 SetConsoleTextColor(COLOR_GREEN);
                 std::cout << "   Display All Processes" << std::endl;
                 SetConsoleTextColor(COLOR_YELLOW);
