@@ -7,18 +7,18 @@
 #include <iomanip>
 #include <psapi.h>
 
-const int COLOR_GREEN = 10;
-const int COLOR_YELLOW = 14;
-const int COLOR_ORANGE = 12;
-const int COLOR_RED = 4;
-const int COLOR_LIGHT_BLUE = 11;
+constexpr int COLOR_GREEN = 10;
+constexpr int COLOR_YELLOW = 14;
+constexpr int COLOR_ORANGE = 12;
+constexpr int COLOR_RED = 4;
+constexpr int COLOR_LIGHT_BLUE = 11;
 
 enum ProcessFilter {
     AllProcesses,
     SystemInformation
 };
 
-void SetConsoleTextColor(int color) {
+void SetConsoleTextColor(const int color) {
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 }
 
@@ -146,13 +146,13 @@ std::string GetSystemInformation() {
 int main() {
     SetConsoleTitle(L"Multitool");
 
-    HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    const HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
     if (snapshot == INVALID_HANDLE_VALUE) {
         std::cerr << "Failed to retrieve process snapshot." << std::endl;
         return 1;
     }
 
-    HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+    const HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
     DWORD consoleMode;
     GetConsoleMode(console, &consoleMode);
     SetConsoleMode(console, consoleMode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
@@ -175,8 +175,8 @@ int main() {
                 std::cout << GetSystemInformation() << std::endl;
             }
 
-            int key = _getch();
-            if (key == 8) {
+            const int key = _getch();
+            if (key == VK_TAB) {
                 optionSelected = false;
             }
         }
@@ -197,22 +197,23 @@ int main() {
             }
 
             int key = _getch();
-            if (key == 224) {
+            if (key == 224/* Reserved */) {
                 key = _getch();
 
-                if (key == 72) {
+                if (key == 72/*H key*/) {
                     filter = AllProcesses;
                 }
-                else if (key == 80) {
+                else if (key == 80/*P Key*/) {
                     filter = SystemInformation;
                 }
             }
-            else if (key == 13) {
+            else if (key == VK_RETURN) {
                 optionSelected = true;
             }
         }
     }
 
-    CloseHandle(snapshot);
-    return 0;
+    // Unreachable
+    //CloseHandle(snapshot);
+    //return 0;
 }
